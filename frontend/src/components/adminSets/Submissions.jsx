@@ -5,6 +5,8 @@ import { useSelector } from "react-redux";
 const Submissions = () => {
   const [submissions, setSubmissions] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedCode, setSelectedCode] = useState(null);
+  const [selectedResult, setSelectedResult] = useState(null);
   const submissionsPerPage = 20; // Number of submissions per page
   const { user } = useSelector((state) => state.profile);
 
@@ -36,11 +38,40 @@ const Submissions = () => {
   // Function to handle page change
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
+  // Function to handle code click
+  const handleCodeClick = (code, result) => {
+    setSelectedCode(code);
+    setSelectedResult(result);
+  };
+
+  const handleCloseCode = () => {
+    setSelectedCode(null);
+    setSelectedResult(null);
+  };
+
   return (
     <div className="bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 min-h-screen p-4">
       <h1 className="text-4xl font-bold text-white text-center mb-8">
         All Submissions
       </h1>
+      {selectedCode && (
+        <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50">
+          <div className="bg-white p-4 rounded shadow-lg w-11/12 md:w-3/4 lg:w-3/5 max-h-3/5 overflow-auto">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold">Submitted Code</h2>
+              <button onClick={handleCloseCode} className="bg-red-500 text-white px-4 py-2 rounded">
+                Close
+              </button>
+            </div>
+            <pre className="bg-gray-800 text-white p-4 rounded overflow-auto max-h-96">{selectedCode}</pre>
+            {selectedResult && (
+              <div className={`text-center mt-4 ${selectedResult.includes("Accepted") ? "text-green-500" : "text-red-500"}`}>
+                {selectedResult}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
       {/* Render table with submissions */}
       <div className="overflow-x-auto shadow-lg rounded-lg">
         <table className="min-w-full bg-white rounded-lg">
@@ -64,7 +95,7 @@ const Submissions = () => {
                 Submitted At
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
-                {user.accountType === "Admin" && <div>code</div>}
+                {user.accountType === "Admin" && <div>Code</div>}
               </th>
             </tr>
           </thead>
